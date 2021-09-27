@@ -1,3 +1,15 @@
+#ifndef CV__ENABLE_C_API_CTORS
+#define CV__ENABLE_C_API_CTORS
+#endif
+
+#ifndef __cplusplus
+#define __cplusplus
+#endif
+
+#ifndef CV__SKIP_MESSAGE_MALFORMED_C_API_CTORS
+#define CV__SKIP_MESSAGE_MALFORMED_C_API_CTORS
+#endif
+
 #include "mex.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,14 +21,16 @@
 #include "lapack.h"  //matlab 
 //#include "include/lapacke_config.h"  //lapack手动，未成功
 //#include "include/lapacke.h"
+#include <opencv2/core/core_c.h>
+#include <opencv2/core/types_c.h>
+#include <opencv2/imgproc/imgproc_c.h>
 #include "opencv2/core/core.hpp" 
 #include "opencv2/features2d/features2d.hpp"
-#include "opencv2/nonfree/features2d.hpp"
+#include "opencv2/features2d.hpp"//#include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include <opencv2\opencv.hpp>
 using namespace cv;
-
-
+using namespace std;
 
 #ifndef FALSE
 #define FALSE 0
@@ -3397,7 +3411,6 @@ void cvCanny3(	const void* srcarr, void* dstarr,
 	CvMat dxstub, *dx = cvGetMat( dxarr, &dxstub );
 	CvMat dystub, *dy = cvGetMat( dyarr, &dystub );
 
-
     CvSize size;
     int flags = aperture_size;
     int low, high;
@@ -3722,10 +3735,14 @@ void Canny3(	InputArray image, OutputArray _edges,
 	_sobel_x.create(src.size(), CV_16S);
 	_sobel_y.create(src.size(), CV_16S);
 
+    cv::Mat matTmpDst = _edges.getMat();
+    cv::Mat matTmpDx = _sobel_x.getMat();
+    cv::Mat matTmpDy = _sobel_y.getMat();
 
-    CvMat c_src = src, c_dst = _edges.getMat();
-	CvMat c_dx = _sobel_x.getMat();
-	CvMat c_dy = _sobel_y.getMat();
+    CvMat c_src(src);
+    CvMat c_dst = matTmpDst;
+	CvMat c_dx = matTmpDx;
+	CvMat c_dy = matTmpDy;
 
 
     cvCanny3(	&c_src, &c_dst, 
